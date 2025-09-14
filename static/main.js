@@ -1,56 +1,51 @@
-const $ = (sel) => document.querySelector(sel);
-const promptInput = $('#promptInput');
-const polishBtn   = $('#polishBtn');
-const resultText  = $('#resultText');
-const copyBtn     = $('#copyBtn');
-const errorBox    = $('#errorBox');
+document.addEventListener('DOMContentLoaded', () => {
+  const btn   = document.getElementById('polishBtn');
+  const input = document.getElementById('userInput');
+  const out   = document.getElementById('result');
+  const copy  = document.getElementById('copyBtn');
+  const err   = document.getElementById('error');
 
-async function polish() {
-  errorBox.hidden = true;
-  resultText.textContent = '';
+  btn.addEventListener('click', async () => {
+    err.hidden = true;
+    err.textContent = '';
+    out.value = '';
 
-  const prompt = (promptInput.value || '').trim();
-  if (!prompt) {
-    errorBox.textContent = 'Please enter something for Charles to polish.';
-    errorBox.hidden = false;
-    return;
-  }
-
-  polishBtn.disabled = true;
-  polishBtn.textContent = 'Polishing…';
-
-  try {
-    const res = await fetch('/polish', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt })
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Server error (${res.status})`);
+    const prompt = (input.value || '').trim();
+    if (!prompt) {
+      err.textContent = 'Please enter something first.';
+      err.hidden = false;
+      return;
     }
 
-    const data = await res.json();
-    resultText.textContent = data.polished || '';
-  } catch (e) {
-    errorBox.textContent = e.message || 'Connection error.';
-    errorBox.hidden = false;
-  } finally {
-    polishBtn.disabled = false;
-    polishBtn.textContent = 'Polish My Prompt';
-  }
-}
+    btn.disabled = true;
+    btn.textContent = 'Polishing…';
 
-function copyOut() {
-  const text = resultText.textContent.trim();
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => (copyBtn.textContent = 'Copy'), 900);
+    try {
+      const res = await fetch('/polish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || `Request failed (${res.status})`);
+      }
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      out.value = data.prompt || '';
+    } catch (e) {
+      err.textContent = e.message || 'Connection error.';
+      err.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Polish My Prompt';
+    }
   });
-}
 
-polishBtn.addEventListener('click', polish);
-copyBtn.addEventListener('click', copyOut);
-
+  copy.addEventListener('click', async () => {
+    if (!out.value) return;
+    await navigator.clipboard.writeText(out.value);
+    copy.textContent = 'Copied';
+    setTimeout(() => (copy.textContent = 'Copy'), 900);
+  });
+});
