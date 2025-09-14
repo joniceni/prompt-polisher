@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Charles’ Prompt Polisher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      width: 100%;
+      background-color: red;
+      padding: 30px 0 20px 0;
+      text-align: center;
+    }
+    .header img {
+      max-width: 200px;
+      border: 3px solid white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: block;
+      margin: 0 auto 15px auto;
+    }
+    .header h1 {
+      color: white;
+      font-size: 32px;
+      margin: 0;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+    p {
+      text-align: left;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    form {
+      text-align: center;
+      margin-top: 20px;
+    }
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid red;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      resize: vertical;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    textarea:hover {
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+      border-color: darkred;
+    }
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.5);
+      border-color: darkred;
+    }
+    button {
+      background-color: red;
+      color: white;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    button:hover {
+      background-color: darkred;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+    }
+    .signature {
+      font-family: "Brush Script MT", cursive;
+      font-size: 22px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    .output-wrap { margin-top:22px; }
+    .output-head {
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+    }
+    .badge {
+      background:red; color:#fff; font-weight:700; font-size:14px;
+      padding:6px 10px; border-radius:14px;
+    }
+    .copy-btn {
+      background:#fff; color:#000; border:2px solid red; font-weight:700;
+      padding:6px 10px; border-radius:6px; cursor:pointer;
+      transition: background 0.3s;
+    }
+    .copy-btn:hover { background:#f2f2f2; }
+    .output-box {
+      background:#fff; border:2px solid red; border-radius:6px;
+      padding:14px; box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      text-align:left; font-size:16px; line-height:1.5; white-space:pre-wrap;
+    }
+    .loader {
+      display:none; margin-top:10px; color:#666; font-size:14px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="/static/Framed Charles.png" alt="Charles">
+    <h1>Charles’ Prompt Polisher</h1>
+  </div>
+
+  <div class="container">
+    <p><strong>Hello!</strong></p>
+
+    <p>
+      Writing good prompts can be tricky sometimes and if your first attempt is vague, 
+      you often get weak results and that wastes your time.
+    </p>
+
+    <p>
+      That’s where I can help because if you paste or type your messy draft into the box 
+      and click <span style="color:red; font-weight:bold;">Polish My Prompt</span>, 
+      I’ll instantly rework it into a sharp prompt you can drop straight into ChatGPT 
+      (or any other AI tool).
+    </p>
+
+    <p>
+      This will save you time, improve the quality of your answers and make AI work better for you.
+    </p>
+
+    <p>
+      Give it a go and you can use it as often as you want.
+    </p>
+
+    <p><em>Ciao for now…</em></p>
+    <div class="signature">Charles</div>
+
+    <form method="POST" id="polisher-form">
+      <textarea name="text_input" rows="6" placeholder="Type here..."></textarea><br>
+      <button id="submitBtn" type="submit">Polish My Prompt</button>
+      <div id="loader" class="loader">Charles is thinking…</div>
+    </form>
+
+    {% if response_text %}
+      <div class="output-wrap">
+        <div class="output-head">
+          <div class="badge">Polished Prompt</div>
+          <button class="copy-btn" type="button" id="copyBtn">Copy</button>
+        </div>
+        <div class="output-box" id="outBox">{{ response_text }}</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="footer">
+    Powered by The Beacon
+  </div>
+
+  <script>
+    const form = document.getElementById('polisher-form');
+    const btn  = document.getElementById('submitBtn');
+    const load = document.getElementById('loader');
+    form?.addEventListener('submit', () => {
+      btn.disabled = true; btn.textContent = 'Polishing…'; load.style.display = 'block';
+    });
+
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn?.addEventListener('click', () => {
+      const out = document.getElementById('outBox');
+      if (!out) return;
+      navigator.clipboard.writeText(out.innerText || out.textContent);
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+    });
+  </script>
+</body>
+</html>
