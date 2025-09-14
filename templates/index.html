@@ -2,37 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Charles’ Prompt Polisher</title>
 
-  <!-- Load your CSS from /static -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- IMPORTANT: we now point to main.js -->
+  <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
 <body>
-  <header class="hero">
+  <header class="page-header">
+    <div class="hero">
+      <!-- IMPORTANT: image name has no spaces -->
+      <img class="charles" src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles" />
+    </div>
+
     <h1>Charles’ Prompt Polisher</h1>
-    <p>Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
+    <p class="lead">
+      Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.
+    </p>
   </header>
 
-  <main class="card">
-    <label for="promptInput" class="sr-only">Your draft</label>
-    <textarea id="promptInput" placeholder="Type here..."></textarea>
+  <main class="container">
+    <div class="card">
+      <textarea id="userInput" placeholder="Type here..." rows="8"></textarea>
+      <button id="polishBtn" class="btn-primary">Polish My Prompt</button>
 
-    <button id="polishBtn" class="btn">Polish My Prompt</button>
+      <h3>Polished Prompt</h3>
+      <div class="output">
+        <input id="result" readonly />
+        <button id="copyBtn" class="btn-ghost">Copy</button>
+      </div>
 
-    <h2>Polished Prompt</h2>
-    <div class="output">
-      <pre id="resultText"></pre>
-      <button id="copyBtn" class="btn btn-outline">Copy</button>
+      <p id="error" class="error" hidden></p>
     </div>
-    <div id="errorBox" class="error" hidden></div>
   </main>
 
-  <footer class="foot">
-    Powered by The Beacon
-  </footer>
-
-  <!-- Load your JS from /static -->
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <footer>Powered by The Beacon</footer>
 </body>
 </html>
