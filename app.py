@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
+import openai
 import os
 
 app = Flask(__name__)
 
-# Create OpenAI client with API key from environment variable
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Load API key from environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/")
 def index():
@@ -14,23 +14,24 @@ def index():
 @app.route("/polish", methods=["POST"])
 def polish():
     try:
-        data = request.json
+        data = request.get_json()
         user_text = data.get("text", "")
 
         if not user_text.strip():
             return jsonify({"error": "No text provided"}), 400
 
-        # Call OpenAI to polish the text
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are Charles, a witty but professional AI that rewrites prompts to be sharper, clearer, and more effective."},
+                {"role": "system", "content": "You are Charles, an AI assistant that rewrites messy prompts into clear, sharp ones."},
                 {"role": "user", "content": user_text}
             ],
+            max_tokens=200,
             temperature=0.7
         )
 
-        polished = response.choices[0].message.content.strip()
+        polished = response["choices"][0]["message"]["content"].strip()
         return jsonify({"polished": polished})
 
     except Exception as e:
@@ -38,4 +39,4 @@ def polish():
 
 
 if __name__ == "__main__":
-    app.run(host="
+    app.run(host="0.0.0.0", port=5000)
