@@ -1,38 +1,45 @@
 from flask import Flask, render_template, request, jsonify
-import openai
-import os
+import os, openai
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
-# Load API Key from environment
+# OpenAI key from Render env var
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-@app.route('/')
+@app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route('/polish', methods=['POST'])
+@app.route("/polish", methods=["POST"])
 def polish():
     try:
-        data = request.get_json()
-        user_prompt = data.get("prompt", "")
-
-        if not user_prompt.strip():
+        data = request.get_json(force=True)
+        user_prompt = (data.get("prompt") or "").strip()
+        if not user_prompt:
             return jsonify({"error": "Prompt cannot be empty."}), 400
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are an assistant that rewrites prompts to be clear, concise, and effective."},
-                {"role": "user", "content": user_prompt}
-            ]
+        # --- Simple rewriter system prompt ---
+        system_prompt = (
+            "You rewrite prompts so they’re clear, specific, and actionable. "
+            "Keep the user’s intent. If the input is vague, infer sensible specifics."
         )
 
-        polished = response["choices"][0]["message"]["content"].strip()
-        return jsonify({"polished": polished})
+        # --- Choose a model you have access to ---
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.3,
+        )
+
+        polished = completion.choices[0].message.content.strip()
+        return jsonify({"prompt": polished})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    # For local; Render runs via Procfile
+    app.run(host="0.0.0.0", port=8000, debug=False)
