@@ -1,48 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Charles’ Prompt Polisher</title>
-  <link rel="stylesheet" href="/static/style.css">
+
+  <!-- Load your CSS from /static -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Charles’ Prompt Polisher</h1>
-      <p>Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
-    </header>
+  <header class="hero">
+    <h1>Charles’ Prompt Polisher</h1>
+    <p>Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
+  </header>
 
-    <textarea id="userInput" placeholder="Type here..."></textarea>
-    <button onclick="polishPrompt()">Polish My Prompt</button>
+  <main class="card">
+    <label for="promptInput" class="sr-only">Your draft</label>
+    <textarea id="promptInput" placeholder="Type here..."></textarea>
+
+    <button id="polishBtn" class="btn">Polish My Prompt</button>
 
     <h2>Polished Prompt</h2>
-    <pre id="result"></pre>
-  </div>
+    <div class="output">
+      <pre id="resultText"></pre>
+      <button id="copyBtn" class="btn btn-outline">Copy</button>
+    </div>
+    <div id="errorBox" class="error" hidden></div>
+  </main>
 
-  <script>
-    async function polishPrompt() {
-      const text = document.getElementById("userInput").value;
-      const result = document.getElementById("result");
+  <footer class="foot">
+    Powered by The Beacon
+  </footer>
 
-      result.textContent = "Polishing...";
-      try {
-        const response = await fetch("/polish", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text })
-        });
-
-        const data = await response.json();
-        if (data.polished) {
-          result.textContent = data.polished;
-        } else {
-          result.textContent = "Error: " + (data.error || "Unknown error");
-        }
-      } catch (err) {
-        result.textContent = "Error: " + err.message;
-      }
-    }
-  </script>
+  <!-- Load your JS from /static -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
