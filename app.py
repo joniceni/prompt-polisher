@@ -4,8 +4,12 @@ from openai import OpenAI
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
+# Get API key
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY is not set in the environment")
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.get("/health")
 def health():
@@ -15,9 +19,7 @@ def health():
 def api_polish():
     text = (request.form.get("prompt") or "").strip()
     if not text:
-        return jsonify({"ok": False, "error": "Please enter a prompt to polish."}), 400
-    if client is None:
-        return jsonify({"ok": False, "error": "Missing OPENAI_API_KEY on the server."}), 503
+        return jsonify({"ok": False, "error": "Please enter a prompt."}), 400
 
     try:
         resp = client.chat.completions.create(
@@ -26,9 +28,8 @@ def api_polish():
                 {
                     "role": "system",
                     "content": (
-                        "You are a prompt polishing assistant. "
-                        "Make text sharper and clearer, remove fluff, but never change the meaning. "
-                        "Do not use Oxford commas (avoid putting a comma before 'and' or 'or' in a list)."
+                        "Polish prompts. Make them sharper, clearer, and shorter. "
+                        "Never use Oxford commas."
                     )
                 },
                 {"role": "user", "content": text}
@@ -36,10 +37,10 @@ def api_polish():
             temperature=0.5,
             max_tokens=220,
         )
-        out = resp.choices[0].message.content.strip()
-        return jsonify({"ok": True, "response": out}), 200
+        answer = resp.choices[0].message.content.strip()
+        return jsonify({"ok": True, "response": answer}), 200
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 502
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 @app.get("/")
 def index():
