@@ -2,56 +2,42 @@ import os
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 
-# Create the OpenAI client.
-# IMPORTANT: We pass ONLY api_key and (optionally) project.
-# No proxies, no http_client — keeps us compatible with the pinned SDK.
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    project=os.getenv("OPENAI_PROJECT") or None
-)
+app = Flask(__name__)
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY is not set.")
 
-@app.route("/")
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+@app.get("/")
 def index():
     return render_template("index.html")
 
-# Simple health check that doesn't touch OpenAI (helps isolate issues)
-@app.route("/health")
-def health():
-    return jsonify({"ok": True}), 200
-
-@app.route("/polish", methods=["POST"])
+@app.post("/polish")
 def polish():
     try:
-        data = request.get_json(force=True)
-        user_prompt = (data or {}).get("prompt", "").strip()
-        if not user_prompt:
-            return jsonify({"error": "Prompt cannot be empty."}), 400
+        data = request.get_json(force=True) or {}
+        raw = (data.get("text") or "").strip()
+        if not raw:
+            return jsonify({"error": "Empty input."}), 400
 
-        # Use the Chat Completions API with the current SDK
         resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You rewrite prompts so they’re clear, specific, and actionable. "
-                        "Be concise but thorough. Keep the user's intent and context."
-                    ),
-                },
-                {"role": "user", "content": user_prompt},
+                {"role": "system", "content":
+                 "You turn rough ideas into clear, structured, high-impact prompts. "
+                 "Keep it concise, actionable, and free of meta-chatter."},
+                {"role": "user", "content": raw}
             ],
             temperature=0.2,
+            max_tokens=600,
         )
-
-        polished = resp.choices[0].message.content.strip()
-        return jsonify({"polished": polished})
-
+        out = resp.choices[0].message.content.strip()
+        return jsonify({"polished": out}), 200
     except Exception as e:
-        # Return the message so we can see issues without digging into logs
-        return jsonify({"error": str(e)}), 500
+        app.logger.exception("Polish failed: %s", e)
+        return jsonify({"error": "Server error contacting AI. Try again."}), 500
 
 if __name__ == "__main__":
-    # Local run
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
