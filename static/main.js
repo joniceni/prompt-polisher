@@ -26,12 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
       });
-      if (!res.ok) {
-        const t = await res.text();
-        throw new Error(t || `Request failed (${res.status})`);
+
+      // Try to parse JSON even on non-200 to show server message
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `Request failed (${res.status})`);
       }
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+
       out.value = data.prompt || '';
     } catch (e) {
       err.textContent = e.message || 'Connection error.';
@@ -45,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
   copy.addEventListener('click', async () => {
     if (!out.value) return;
     await navigator.clipboard.writeText(out.value);
+    const prev = copy.textContent;
     copy.textContent = 'Copied';
-    setTimeout(() => (copy.textContent = 'Copy'), 900);
+    setTimeout(() => (copy.textContent = prev), 900);
   });
 });
