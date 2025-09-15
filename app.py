@@ -4,11 +4,9 @@ from openai import OpenAI
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
-# Get API key
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise RuntimeError("OPENAI_API_KEY is not set in the environment")
-
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.get("/health")
@@ -28,8 +26,8 @@ def api_polish():
                 {
                     "role": "system",
                     "content": (
-                        "Polish prompts. Make them sharper, clearer, and shorter. "
-                        "Never use Oxford commas."
+                        "You polish prompts. Keep intent, remove fluff, tighten wording, make it direct. "
+                        "Prefer short sentences. No Oxford commas. British English."
                     )
                 },
                 {"role": "user", "content": text}
