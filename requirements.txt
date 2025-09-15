@@ -1,4 +1,4 @@
 flask==3.0.3
 openai==1.35.10
-httpx==0.27.2     # <-- pin to a version that supports 'proxies'
+httpx==0.27.2
 gunicorn==21.2.0
