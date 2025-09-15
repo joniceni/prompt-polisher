@@ -1,37 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charles’ Prompt Polisher</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Charles’ Prompt Polisher</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="banner">
-        <div class="banner-content">
-            <img src="{{ url_for('static', filename='charles.png') }}" alt="Charles" class="charles-img">
-            <h1>Charles’ Prompt Polisher</h1>
+
+  <!-- Red band header -->
+  <header class="hero">
+    <div class="hero-inner">
+      <img
+        class="charles"
+        src="{{ url_for('static', filename='Framed Charles.png') }}"
+        alt="Charles"
+      />
+      <h1>Charles’ Prompt Polisher</h1>
+      <p class="subtitle">
+        Paste your rough idea and click <strong>Polish My Prompt</strong>.
+        I’ll turn it into a sharp prompt you can drop into ChatGPT.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <label for="text-input" class="label sr-only">Your draft</label>
+      <textarea id="text-input" class="input" placeholder="Type here..."></textarea>
+
+      <div class="actions">
+        <button id="polish-btn" class="btn">Polish My Prompt</button>
+      </div>
+
+      <div id="error" class="error" hidden></div>
+
+      <div class="output-row">
+        <label for="output-text" class="label">Polished Prompt</label>
+        <div class="copy-wrap">
+          <textarea id="output-text" class="output" readonly></textarea>
+          <button id="copy-btn" class="copy">Copy</button>
         </div>
-    </header>
+      </div>
+    </section>
+  </main>
 
-    <main>
-        <p class="subtitle">Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
+  <footer class="footer">
+    Powered by The Beacon
+  </footer>
 
-        <div class="card">
-            <textarea id="promptInput" placeholder="Type here..."></textarea>
-            <button id="polishBtn">Polish My Prompt</button>
-            <h2>Polished Prompt</h2>
-            <div class="output-box">
-                <input type="text" id="resultOutput" readonly>
-                <button id="copyBtn">Copy</button>
-            </div>
-            <p id="errorMsg" class="error"></p>
-        </div>
-    </main>
-
-    <footer>
-        <p>Powered by The Beacon</p>
-    </footer>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
