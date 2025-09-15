@@ -1,43 +1,40 @@
-import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is not set.")
+# Initialise OpenAI client using API key from environment
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-@app.get("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "POST":
+        prompt = request.form.get("prompt", "")
+
+        if not prompt.strip():
+            return jsonify({"error": "No prompt provided"}), 400
+
+        try:
+            # Call GPT model
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=200,
+                temperature=0.7
+            )
+
+            reply = response.choices[0].message.content.strip()
+            return jsonify({"response": reply})
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    # GET request – show form
     return render_template("index.html")
 
-@app.post("/polish")
-def polish():
-    try:
-        data = request.get_json(force=True) or {}
-        raw = (data.get("text") or "").strip()
-        if not raw:
-            return jsonify({"error": "Empty input."}), 400
-
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content":
-                 "You turn rough ideas into clear, structured, high-impact prompts. "
-                 "Keep it concise, actionable, and free of meta-chatter."},
-                {"role": "user", "content": raw}
-            ],
-            temperature=0.2,
-            max_tokens=600,
-        )
-        out = resp.choices[0].message.content.strip()
-        return jsonify({"polished": out}), 200
-    except Exception as e:
-        app.logger.exception("Polish failed: %s", e)
-        return jsonify({"error": "Server error contacting AI. Try again."}), 500
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
