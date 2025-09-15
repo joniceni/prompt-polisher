@@ -1,23 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prompt Polisher</title>
-  <!-- IMPORTANT: use url_for so Flask points to /static/style.css correctly -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header class="band">
-    <div class="band-inner">
-      <div class="charles">
-        <!-- IMPORTANT: image also via url_for -->
-        <img src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles" onerror="this.style.display='none'">
-      </div>
-      <h1 class="title">Prompt Polisher</h1>
-    </div>
-  </header>
+  <!-- Header -->
+  <div class="header">
+    <img src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles" class="charles-image">
+    <h1>Prompt Polisher</h1>
+  </div>
 
-  <!-- (rest of the page you already have) -->
+  <!-- Intro text -->
+  <div class="intro">
+    <p><strong>Hello!</strong></p>
+    <p>
+      Writing good prompts can be tricky sometimes and if your first attempt is vague, you often get weak results and that wastes your time.
+    </p>
+    <p>
+      That’s where I can help because if you paste or type your messy draft into the box and click
+      <em>Polish My Prompt</em>, I’ll instantly rework it into a sharp prompt you can drop straight into ChatGPT
+      (or any other AI tool).
+    </p>
+    <p>
+      This will save you time, improve the quality of your answers and make AI work better for you.
+    </p>
+    <p>Give it a go and you can use it as often as you want.</p>
+    <p><strong>Ciao for now…<br>Charles</strong></p>
+  </div>
+
+  <!-- Prompt boxes -->
+  <div class="prompt-container">
+    <!-- Input -->
+    <div class="card">
+      <h2>Your prompt</h2>
+      <textarea id="user-prompt" placeholder="Paste or type your rough prompt here..."></textarea>
+      <button id="polish-btn">Polish My Prompt</button>
+      <p id="error" class="error"></p>
+    </div>
+
+    <!-- Output -->
+    <div class="card">
+      <h2>Polished prompt</h2>
+      <textarea id="polished-prompt" readonly></textarea>
+      <button id="copy-btn">Copy</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Powered by The Beacon</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
