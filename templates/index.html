@@ -7,43 +7,40 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <!-- HERO -->
   <header class="hero">
     <div class="hero-inner">
-      <img class="charles" src="{{ url_for('static', filename='charles.png') }}" alt="Charles" />
+      <!-- Make sure this file exists in /static -->
+      <img class="charles" id="charlesImg"
+           src="{{ url_for('static', filename='framed-charles.png') }}"
+           alt="Charles" />
       <h1>Charles’ Prompt Polisher</h1>
       <p>Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
     </div>
   </header>
 
-  <!-- CARD -->
   <main class="wrap">
     <section class="card">
       <label class="label" for="raw">Your Idea</label>
       <textarea id="raw" placeholder="Type here..."></textarea>
+
+      <div id="msg" class="msg" aria-live="polite"></div>
 
       <button id="polish">Polish My Prompt</button>
 
       <div class="output">
         <div class="output-head">
           <span class="label">Polished Prompt</span>
-          <button id="copy">Copy</button>
+          <button id="copy" type="button">Copy</button>
         </div>
         <textarea id="polished" readonly></textarea>
       </div>
     </section>
 
     <footer class="foot">
-      <small>Made by ICENI Mastermind CIC</small>
+      <small>Powered by The Beacon</small>
     </footer>
   </main>
 
-  <script>
-    // wire up once you’re ready
-    document.getElementById('copy').addEventListener('click', async () => {
-      const txt = document.getElementById('polished').value || '';
-      try { await navigator.clipboard.writeText(txt); } catch(e){}
-    });
-  </script>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>
