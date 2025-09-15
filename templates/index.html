@@ -1,37 +1,42 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prompt Polisher</title>
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 720px; margin: 2rem auto; }
-    textarea { width: 100%; min-height: 160px; }
-    button { padding: 0.6rem 1rem; cursor: pointer; }
-    pre { white-space: pre-wrap; background: #f6f6f6; padding: 1rem; border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <h1>Prompt Polisher</h1>
-  <form id="form" method="post">
-    <textarea name="prompt" placeholder="Type your prompt..."></textarea>
-    <br><br>
-    <button type="submit">Polish</button>
-  </form>
-  <h3>Response</h3>
-  <pre id="out">—</pre>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompt Polisher</title>
+<link rel="icon" href="/static/favicon.ico">
+<style>
+  :root{
+    --red:#c62828;
+    --red-dark:#8e0000;
+    --ink:#111;
+    --muted:#6b7280;
+    --bg:#fafafa;
+    --card:#ffffff;
+    --ring:rgba(0,0,0,.08);
+    --shadow:0 10px 25px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
 
-  <script>
-    const form = document.getElementById('form');
-    const out = document.getElementById('out');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      out.textContent = 'Working...';
-      const data = new FormData(form);
-      const res = await fetch('/', { method: 'POST', body: data });
-      const json = await res.json();
-      out.textContent = json.response || json.error || 'No response';
-    });
-  </script>
-</body>
-</html>
+  .banner{background:var(--red);color:#fff;box-shadow:var(--shadow)}
+  .band{max-width:1100px;margin:0 auto;display:flex;gap:18px;align-items:center;padding:18px 22px}
+  .band img{width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 6px 14px rgba(0,0,0,.25);border:3px solid rgba(255,255,255,.9)}
+  .title{font-weight:800;letter-spacing:.3px;font-size:28px}
+  .sub{opacity:.92;font-size:14px;margin-top:2px}
+
+  .wrap{max-width:1100px;margin:28px auto;padding:0 22px}
+  .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;border:1px solid var(--ring)}
+  h2{margin:0 0 12px 0;font-size:18px}
+  textarea{width:100%;min-height:220px;resize:vertical;padding:14px 16px;border-radius:14px;border:1px solid var(--ring);outline:none;font:inherit;box-shadow:inset 0 1px 2px rgba(0,0,0,.03)}
+  textarea:focus{border-color:#bbb;box-shadow:0 0 0 4px rgba(198,40,40,.12)}
+  .row{display:flex;gap:12px;align-items:center;justify-content:flex-start;margin-top:14px}
+  button{background:var(--red);color:#fff;border:0;padding:12px 18px;border-radius:12px;font-weight:700;letter-spacing:.3px;cursor:pointer;box-shadow:var(--shadow)}
+  button:hover{background:var(--red-dark)}
+  .muted{color:var(--muted)}
+  pre{margin:0;white-space:pre-wrap;background:#f7f7f7;padding:16px;border-radius:14px;border:1px solid var(--ring)}
+  .err{backgr
