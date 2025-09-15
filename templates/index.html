@@ -1,80 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Prompt Polisher</title>
-<style>
-  :root{
-    --red:#C91818; --red-deep:#A31313; --ink:#0F0F0F; --muted:#6F7380;
-    --bg:#F6F6F8; --card:#FFFFFF; --ring:rgba(0,0,0,.08);
-    --shadow-lg:0 28px 60px rgba(0,0,0,.12), 0 6px 18px rgba(0,0,0,.10);
-    --shadow-md:0 16px 34px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.08);
-    --r-xl:22px; --r-lg:18px; --r-md:14px;
-    --soft-red:rgba(201,24,24,.08);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
-
-  /* Header band */
-  .band{background:var(--red); box-shadow:var(--shadow-md)}
-  .band-inner{max-width:1100px;margin:0 auto;padding:34px 18px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
-  .charles{width:128px;height:128px;border-radius:18px;background:#A31313;border:5px solid #fff;box-shadow:var(--shadow-md);display:grid;place-items:center}
-  .charles img{width:114px;height:114px;border-radius:14px;object-fit:cover}
-  .title{color:#fff;font-weight:900;letter-spacing:.3px;font-size:40px;margin:0}
-
-  /* Intro copy (BLACK text, below band) */
-  .intro{max-width:900px;margin:22px auto 8px;padding:0 18px;color:var(--ink);text-align:left}
-  .intro p{margin:0 0 12px 0}
-  .intro .signoff{margin-top:10px;font-weight:700}
-
-  /* Main layout */
-  .wrap{max-width:1100px;margin:24px auto 40px;padding:0 18px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-  @media (max-width:980px){.grid{grid-template-columns:1fr}}
-
-  .card{
-    background:var(--card);border:1px solid var(--ring);border-radius:var(--r-xl);
-    box-shadow:var(--shadow-lg);padding:22px;transition:box-shadow .2s, border-color .2s, background .2s;
-  }
-  .card:hover{box-shadow:var(--shadow-lg); border-color:#f1c7c7; background:#fff; outline:6px solid var(--soft-red)}
-  h2{margin:0 0 8px;font-size:19px}
-  .muted{color:var(--muted); margin:0 0 16px}
-
-  textarea{
-    width:100%;min-height:280px;resize:vertical;padding:16px 18px;border-radius:var(--r-lg);
-    border:1px solid var(--ring);outline:none;background:#FAFAFB;box-shadow:inset 0 1px 2px rgba(0,0,0,.03);
-  }
-  textarea:focus{border-color:#cfcfd6;box-shadow:0 0 0 6px rgba(201,24,24,.12)}
-
-  .actions{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap}
-  .btn{background:var(--red);color:#fff;border:2px solid #fff;padding:14px 26px;border-radius:16px;font-weight:900;letter-spacing:.2px;cursor:pointer;box-shadow:var(--shadow-lg)}
-  .btn:hover{background:var(--red-deep)}
-  .status{color:var(--muted)}
-
-  .out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .out-title{font-weight:700}
-  .copy{background:var(--red); color:#fff; border:2px solid #fff; border-radius:12px; padding:8px 12px; cursor:pointer; box-shadow:var(--shadow-md)}
-  .copy:hover{background:var(--red-deep)}
-  pre{margin:0;white-space:pre-wrap;border:1px solid var(--ring);border-radius:var(--r-lg);padding:14px;background:#FAFAFB}
-
-  .footer{max-width:1100px;margin:6px auto 40px;padding:0 18px;color:#9aa0aa;text-align:center}
-
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:opacity .25s}
-  .toast.show{opacity:1}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prompt Polisher</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-  <!-- Band -->
+  <!-- Red band header -->
   <div class="band">
     <div class="band-inner">
-      <div class="charles"><img src="/static/framed-charles.png" alt="Charles" onerror="this.style.display='none'"></div>
+      <div class="charles">
+        <img src="/static/framed-charles.png" alt="Charles" onerror="this.style.display='none'">
+      </div>
       <h1 class="title">Prompt Polisher</h1>
     </div>
   </div>
 
-  <!-- Intro copy (your exact words, now black) -->
+  <!-- Intro copy (black text) -->
   <section class="intro">
     <p><strong>Hello!</strong></p>
     <p>Writing good prompts can be tricky sometimes and if your first attempt is vague, you often get weak results and that wastes your time.</p>
@@ -84,10 +28,10 @@
     <p class="signoff">Ciao for now…<br>Charles</p>
   </section>
 
-  <!-- Main -->
+  <!-- Main: side-by-side cards -->
   <main class="wrap">
     <div class="grid">
-      <!-- Input card -->
+      <!-- Input -->
       <section class="card">
         <h2>Your prompt</h2>
         <p class="muted">Paste or type your rough prompt, then click the button.</p>
@@ -100,13 +44,13 @@
         </form>
       </section>
 
-      <!-- Output card -->
+      <!-- Output -->
       <section class="card">
         <div class="out-head">
           <div class="out-title">Polished prompt</div>
           <button id="copy" class="copy" type="button">Copy</button>
         </div>
-        <pre id="out-text">—</pre>
+        <div id="out-text" class="out-text">—</div>
       </section>
     </div>
   </main>
@@ -114,40 +58,40 @@
   <div class="footer">Powered by The Beacon</div>
   <div id="toast" class="toast">Copied</div>
 
-<script>
-const form   = document.getElementById('form');
-const outTxt = document.getElementById('out-text');
-const statusEl = document.getElementById('status');
-const copyBtn  = document.getElementById('copy');
-const toast    = document.getElementById('toast');
+  <script>
+    const form    = document.getElementById('form');
+    const outEl   = document.getElementById('out-text');
+    const statusEl= document.getElementById('status');
+    const copyBtn = document.getElementById('copy');
+    const toast   = document.getElementById('toast');
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  statusEl.textContent = 'Working…';
-  const data = new FormData(form);
-  try {
-    const res = await fetch('/api/polish', { method: 'POST', body: data });
-    const json = await res.json();
-    if (json.ok) {
-      outTxt.textContent = json.response || 'No content';
-      statusEl.textContent = 'Done';
-    } else {
-      outTxt.textContent = json.error || 'Error';
-      statusEl.textContent = 'Error';
-    }
-  } catch (err) {
-    outTxt.textContent = String(err);
-    statusEl.textContent = 'Network error';
-  }
-});
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Working…';
+      const data = new FormData(form);
+      try {
+        const res  = await fetch('/api/polish', { method: 'POST', body: data });
+        const json = await res.json();
+        if (json.ok) {
+          outEl.textContent = json.response || 'No content';
+          statusEl.textContent = 'Done';
+        } else {
+          outEl.textContent = json.error || 'Error';
+          statusEl.textContent = 'Error';
+        }
+      } catch (err) {
+        outEl.textContent = String(err);
+        statusEl.textContent = 'Network error';
+      }
+    });
 
-copyBtn.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(outTxt.textContent);
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 900);
-  } catch {}
-});
-</script>
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(outEl.textContent);
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 900);
+      } catch {}
+    });
+  </script>
 </body>
 </html>
