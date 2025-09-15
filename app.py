@@ -4,11 +4,10 @@ import os
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
-# Initialize OpenAI client (no proxies!)
+# Initialize OpenAI client (NO proxies!)
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
-    organization=None,  # optional
-    project=os.getenv("OPENAI_PROJECT")  # this is for project keys
+    project=os.getenv("OPENAI_PROJECT")  # optional, only if using project keys
 )
 
 @app.route('/')
@@ -24,6 +23,7 @@ def polish():
         if not user_prompt.strip():
             return jsonify({"error": "Prompt cannot be empty."}), 400
 
+        # Call OpenAI API
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
