@@ -1,40 +1,47 @@
+import os
 from flask import Flask, request, jsonify, render_template
 from openai import OpenAI
-import os
+
+# ---------- CRITICAL ----------
+# Do NOT pass 'proxies' or custom http_client here.
+# Just rely on environment (HTTP_PROXY/HTTPS_PROXY) if you actually need a proxy.
+# --------------------------------
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 app = Flask(__name__)
 
-# Initialise OpenAI client using API key from environment
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+@app.get("/health")
+def health():
+    # quick probe endpoint for Render
+    return {"status": "ok"}, 200
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        prompt = request.form.get("prompt", "")
-
-        if not prompt.strip():
+        prompt = request.form.get("prompt", "").strip()
+        if not prompt:
             return jsonify({"error": "No prompt provided"}), 400
 
         try:
-            # Call GPT model
-            response = client.chat.completions.create(
+            resp = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "system", "content": "You are a concise, helpful assistant."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=200,
-                temperature=0.7
+                temperature=0.6,
+                max_tokens=250,
             )
-
-            reply = response.choices[0].message.content.strip()
-            return jsonify({"response": reply})
-
+            answer = resp.choices[0].message.content.strip()
+            return jsonify({"response": answer})
         except Exception as e:
+            # Surface exact error in logs and as JSON
+            app.logger.exception("OpenAI error")
             return jsonify({"error": str(e)}), 500
 
-    # GET request – show form
     return render_template("index.html")
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
