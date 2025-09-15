@@ -8,17 +8,17 @@
 </head>
 <body>
 
-  <!-- Red band header -->
-  <div class="band">
+  <!-- Red band -->
+  <header class="band">
     <div class="band-inner">
       <div class="charles">
         <img src="/static/framed-charles.png" alt="Charles" onerror="this.style.display='none'">
       </div>
       <h1 class="title">Prompt Polisher</h1>
     </div>
-  </div>
+  </header>
 
-  <!-- Intro copy (black text) -->
+  <!-- Intro (black text) -->
   <section class="intro">
     <p><strong>Hello!</strong></p>
     <p>Writing good prompts can be tricky sometimes and if your first attempt is vague, you often get weak results and that wastes your time.</p>
@@ -28,10 +28,10 @@
     <p class="signoff">Ciao for now…<br>Charles</p>
   </section>
 
-  <!-- Main: side-by-side cards -->
+  <!-- Main: side-by-side, equal width -->
   <main class="wrap">
-    <div class="grid">
-      <!-- Input -->
+    <div class="prompt-container">
+      <!-- Input card -->
       <section class="card">
         <h2>Your prompt</h2>
         <p class="muted">Paste or type your rough prompt, then click the button.</p>
@@ -44,7 +44,7 @@
         </form>
       </section>
 
-      <!-- Output -->
+      <!-- Output card -->
       <section class="card">
         <div class="out-head">
           <div class="out-title">Polished prompt</div>
@@ -55,15 +55,15 @@
     </div>
   </main>
 
-  <div class="footer">Powered by The Beacon</div>
+  <footer class="footer">Powered by The Beacon</footer>
   <div id="toast" class="toast">Copied</div>
 
   <script>
-    const form    = document.getElementById('form');
-    const outEl   = document.getElementById('out-text');
-    const statusEl= document.getElementById('status');
-    const copyBtn = document.getElementById('copy');
-    const toast   = document.getElementById('toast');
+    const form     = document.getElementById('form');
+    const outEl    = document.getElementById('out-text');
+    const statusEl = document.getElementById('status');
+    const copyBtn  = document.getElementById('copy');
+    const toast    = document.getElementById('toast');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
