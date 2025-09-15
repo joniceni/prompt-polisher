@@ -1,56 +1,39 @@
-import os
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
+import os
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
-# Read secrets from Render’s Environment (Dashboard → Environment)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_PROJECT = os.getenv("OPENAI_PROJECT")  # optional but recommended
+# Create client with API key from Render env
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Create the OpenAI client (new SDK)
-client = OpenAI(api_key=OPENAI_API_KEY, project=OPENAI_PROJECT)
-
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
     return render_template("index.html")
 
 @app.route("/polish", methods=["POST"])
 def polish():
     try:
-        data = request.get_json(force=True) or {}
-        user_prompt = (data.get("prompt") or "").strip()
+        data = request.get_json()
+        user_prompt = data.get("prompt", "")
 
-        if not user_prompt:
+        if not user_prompt.strip():
             return jsonify({"error": "Prompt cannot be empty."}), 400
 
-        # Keep it tight so it’s snappy (you can adjust later)
-        system = (
-            "You are a prompt-polishing assistant. Rewrite the user's draft "
-            "into a sharp, specific, unambiguous prompt that can be dropped "
-            "straight into ChatGPT (or any LLM). Keep the user's intent. "
-            "Use plain language, include useful constraints (tone, format, audience), "
-            "and remove fluff."
-        )
-
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            temperature=0.4,
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user_prompt},
+                {"role": "system", "content": "You are an assistant that rewrites prompts to be clear, concise, and effective."},
+                {"role": "user", "content": user_prompt}
             ],
+            max_tokens=200
         )
 
-        text = resp.choices[0].message.content.strip()
-        return jsonify({"result": text})
+        polished = response.choices[0].message.content.strip()
+        return jsonify({"polished": polished})
 
     except Exception as e:
-        # Don’t leak internals to users; return a short message
-        return jsonify({"error": f"APIConnectionError: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
-
-# Gunicorn looks for "app"
 if __name__ == "__main__":
-    # Handy for local runs; Render will use gunicorn (see Procfile)
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=False)
+    app.run(host="0.0.0.0", port=5000)
