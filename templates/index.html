@@ -6,16 +6,14 @@
   <title>Charles’ Prompt Polisher</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <!-- IMPORTANT: we now point to main.js -->
   <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
 <body>
   <header class="page-header">
     <div class="hero">
-      <!-- IMPORTANT: image name has no spaces -->
-      <img class="charles" src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles" />
+      <!-- Make sure this file exists in /static with exactly this name -->
+      <img class="charles" src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles">
     </div>
-
     <h1>Charles’ Prompt Polisher</h1>
     <p class="lead">
       Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.
