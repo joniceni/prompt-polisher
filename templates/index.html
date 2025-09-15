@@ -2,47 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Charles’ Prompt Polisher</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prompt Polisher</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 720px; margin: 2rem auto; }
+    textarea { width: 100%; min-height: 160px; }
+    button { padding: 0.6rem 1rem; cursor: pointer; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 1rem; border-radius: 8px; }
+  </style>
 </head>
 <body>
-  <!-- HERO -->
-  <header class="hero">
-    <div class="hero-inner">
-      <img class="charles" id="charlesImg"
-           src="{{ url_for('static', filename='framed-charles.png') }}"
-           alt="Charles" />
-      <h1>Charles’ Prompt Polisher</h1>
-      <p>Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
-    </div>
-  </header>
+  <h1>Prompt Polisher</h1>
+  <form id="form" method="post">
+    <textarea name="prompt" placeholder="Type your prompt..."></textarea>
+    <br><br>
+    <button type="submit">Polish</button>
+  </form>
+  <h3>Response</h3>
+  <pre id="out">—</pre>
 
-  <!-- CARD -->
-  <main class="wrap">
-    <section class="card">
-      <label class="label" for="raw">Your Idea</label>
-      <textarea id="raw" placeholder="Type here..."></textarea>
-
-      <div id="msg" class="msg" aria-live="polite"></div>
-
-      <button id="polish" type="button">Polish My Prompt</button>
-
-      <div class="output">
-        <div class="output-head">
-          <span class="label">Polished Prompt</span>
-          <button id="copy" type="button">Copy</button>
-        </div>
-        <textarea id="polished" readonly></textarea>
-      </div>
-    </section>
-
-    <footer class="foot">
-      <small>Powered by The Beacon</small>
-    </footer>
-  </main>
-
-  <!-- Load your JS -->
-  <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+  <script>
+    const form = document.getElementById('form');
+    const out = document.getElementById('out');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      out.textContent = 'Working...';
+      const data = new FormData(form);
+      const res = await fetch('/', { method: 'POST', body: data });
+      const json = await res.json();
+      out.textContent = json.response || json.error || 'No response';
+    });
+  </script>
 </body>
 </html>
