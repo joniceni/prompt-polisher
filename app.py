@@ -4,11 +4,14 @@ from openai import OpenAI
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
+api_key = os.environ.get("OPENAI_API_KEY")
+project_id = os.environ.get("OPENAI_PROJECT")  # optional, but helpful for sk-proj keys
+
+if not api_key:
     raise RuntimeError("OPENAI_API_KEY is not set in the environment")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# If OPENAI_PROJECT is present we pass it; otherwise we rely on the project encoded in the key.
+client = OpenAI(api_key=api_key, project=project_id) if project_id else OpenAI(api_key=api_key)
 
 @app.get("/health")
 def health():
@@ -27,8 +30,9 @@ def api_polish():
                 {
                     "role": "system",
                     "content": (
-                        "You polish prompts. Keep the user’s intent, remove fluff, tighten wording, "
-                        "and make the result direct and ready to paste into an AI model. Use British English."
+                        "You polish prompts. Keep intent, remove fluff, tighten wording, "
+                        "and make the result direct and ready to paste into an AI model. "
+                        "Use British English."
                     )
                 },
                 {"role": "user", "content": text}
@@ -38,8 +42,10 @@ def api_polish():
         )
         answer = resp.choices[0].message.content.strip()
         return jsonify({"ok": True, "response": answer}), 200
+
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+        # Return the exact message so the UI shows what’s wrong (auth, quota, etc.)
+        return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
 
 @app.get("/")
 def index():
