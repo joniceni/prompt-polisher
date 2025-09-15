@@ -4,18 +4,26 @@ from openai import OpenAI
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
-api_key = os.environ.get("OPENAI_API_KEY")
-project_id = os.environ.get("OPENAI_PROJECT")  # optional, but helpful for sk-proj keys
+API_KEY = os.environ.get("OPENAI_API_KEY")
+if not API_KEY:
+    raise RuntimeError("OPENAI_API_KEY is not set on this service")
 
-if not api_key:
-    raise RuntimeError("OPENAI_API_KEY is not set in the environment")
-
-# If OPENAI_PROJECT is present we pass it; otherwise we rely on the project encoded in the key.
-client = OpenAI(api_key=api_key, project=project_id) if project_id else OpenAI(api_key=api_key)
+client = OpenAI(api_key=API_KEY)
+MODEL = "gpt-4o-mini"   # change here if your project doesn’t have this model
 
 @app.get("/health")
 def health():
     return {"status": "ok"}, 200
+
+# Quick connectivity + permissions check
+@app.get("/diag")
+def diag():
+    try:
+        # light call that also surfaces auth/permission issues
+        _ = client.models.list()
+        return {"ok": True, "msg": "OpenAI reachable and key accepted"}, 200
+    except Exception as e:
+        return {"ok": False, "error": f"{type(e).__name__}: {e}"}, 500
 
 @app.post("/api/polish")
 def api_polish():
@@ -25,26 +33,26 @@ def api_polish():
 
     try:
         resp = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=MODEL,
             messages=[
                 {
                     "role": "system",
                     "content": (
                         "You polish prompts. Keep intent, remove fluff, tighten wording, "
-                        "and make the result direct and ready to paste into an AI model. "
+                        "and make it direct and ready to paste into an AI model. "
                         "Use British English."
-                    )
+                    ),
                 },
-                {"role": "user", "content": text}
+                {"role": "user", "content": text},
             ],
             temperature=0.5,
             max_tokens=220,
         )
-        answer = resp.choices[0].message.content.strip()
-        return jsonify({"ok": True, "response": answer}), 200
+        out = resp.choices[0].message.content.strip()
+        return jsonify({"ok": True, "response": out}), 200
 
     except Exception as e:
-        # Return the exact message so the UI shows what’s wrong (auth, quota, etc.)
+        # Bubble the real cause to the UI (auth/quota/model access/network)
         return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
 
 @app.get("/")
