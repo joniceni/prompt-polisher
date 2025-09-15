@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Prompt Polisher</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
@@ -12,7 +12,7 @@
   <header class="band">
     <div class="band-inner">
       <div class="charles">
-        <img src="/static/framed-charles.png" alt="Charles" onerror="this.style.display='none'">
+        <img src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles" onerror="this.style.display='none'">
       </div>
       <h1 class="title">Prompt Polisher</h1>
     </div>
@@ -31,7 +31,6 @@
   <!-- Main: side-by-side, equal width -->
   <main class="wrap">
     <div class="prompt-container">
-      <!-- Input card -->
       <section class="card">
         <h2>Your prompt</h2>
         <p class="muted">Paste or type your rough prompt, then click the button.</p>
@@ -44,7 +43,6 @@
         </form>
       </section>
 
-      <!-- Output card -->
       <section class="card">
         <div class="out-head">
           <div class="out-title">Polished prompt</div>
