@@ -1,72 +1,65 @@
-const $ = (sel) => document.querySelector(sel);
+(function () {
+  const $ = (id) => document.getElementById(id);
 
-const input = $("#text-input");
-const btn = $("#polish-btn");
-const out = $("#output-text");
-const copy = $("#copy-btn");
-const errorBox = $("#error");
+  const btn = $('polish');
+  const rawEl = $('raw');
+  const outEl = $('polished');
+  const copyBtn = $('copy');
+  const msg = $('msg');
+  const charles = $('charlesImg');
 
-function showError(msg) {
-  errorBox.textContent = msg;
-  errorBox.hidden = !msg;
-}
-
-async function polish() {
-  showError("");
-  out.value = "";
-
-  const text = (input.value || "").trim();
-  if (!text) {
-    showError("Please type something first.");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = "Polishing…";
-
-  try {
-    const res = await fetch("/polish", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: text }),
+  // Fallback if framed-charles.png can’t be loaded (wrong name/case/path)
+  if (charles) {
+    charles.addEventListener('error', () => {
+      charles.outerHTML = '<div class="charles charles-fallback" aria-label="Charles">C</div>';
     });
+  }
 
-    const data = await res.json().catch(() => ({}));
+  const show = (text, type = '') => {
+    if (!msg) return;
+    msg.textContent = text || '';
+    msg.className = `msg ${type}`;
+  };
 
-    if (!res.ok) {
-      showError(data.error || "Something went wrong.");
-      return;
+  async function handlePolish() {
+    try {
+      const text = (rawEl.value || '').trim();
+      if (!text) { show('Please type something first.', 'warn'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Polishing…';
+      show('');
+
+      const res = await fetch('/polish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      // Try to parse JSON even on non-200 to surface server error messages
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Connection error');
+
+      outEl.value = data.polished || '';
+      if (!outEl.value) show('No output returned.', 'warn');
+    } catch (e) {
+      show(e.message || 'Connection error', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Polish My Prompt';
     }
+  }
 
-    out.value = data.result || "";
-    if (!out.value) {
-      showError("No result received.");
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(outEl.value || '');
+      show('Copied!', 'ok');
+    } catch {
+      show('Copy failed.', 'warn');
     }
-  } catch (e) {
-    showError("Connection error. Please try again.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Polish My Prompt";
+    setTimeout(() => show(''), 1200);
   }
-}
 
-btn.addEventListener("click", polish);
-
-// Enter + Ctrl/Cmd+Enter support
-input.addEventListener("keydown", (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "enter") {
-    polish();
-  }
-});
-
-copy.addEventListener("click", async () => {
-  const text = out.value || "";
-  if (!text) return;
-  try {
-    await navigator.clipboard.writeText(text);
-    copy.textContent = "Copied!";
-    setTimeout(() => (copy.textContent = "Copy"), 900);
-  } catch {
-    // no-op
-  }
-});
+  if (btn) btn.addEventListener('click', handlePolish);
+  if (copyBtn) copyBtn.addEventListener('click', handleCopy);
+})();
