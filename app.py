@@ -1,15 +1,31 @@
 import os
-from flask import Flask, request, jsonify, render_template
+import traceback
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from openai import OpenAI
 
-app = Flask(__name__)  # serves /static automatically
+# Be explicit about folders (prevents "blank page" if Flask can't auto-find them)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-# OpenAI client (no proxies arg)
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+app = Flask(__name__, template_folder=TEMPLATES_DIR, static_folder=STATIC_DIR)
 
+# Quick health + sanity endpoints
 @app.get("/health")
 def health():
     return {"status": "ok"}, 200
+
+@app.get("/whoami")
+def whoami():
+    return "Flask is running and routing correctly.", 200
+
+# Serve static explicitly if needed
+@app.get("/static/<path:filename>")
+def custom_static(filename):
+    return send_from_directory(STATIC_DIR, filename)
+
+# --- OpenAI client (no proxies) ---
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 @app.post("/api/polish")
 def api_polish():
@@ -34,7 +50,24 @@ def api_polish():
 
 @app.get("/")
 def index():
-    return render_template("index.html")
+    # Never return blank: if template fails, show a simple HTML fallback
+    try:
+        return render_template("index.html")
+    except Exception:
+        app.logger.exception("Template render failed")
+        return (
+            "<h1>Template error</h1>"
+            "<p>Flask couldn't render <code>templates/index.html</code>.</p>"
+            "<p>Traceback:</p>"
+            f"<pre>{traceback.format_exc()}</pre>",
+            500,
+        )
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+# Catch-all error page so you never see a white screen
+@app.errorhandler(Exception)
+def handle_any_error(e):
+    app.logger.exception("Unhandled error")
+    return (
+        "<h1>Application error</h1>"
+        f"<p>{str(e)}</p>"
+        f"<pre>{traceback.
