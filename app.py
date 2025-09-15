@@ -23,7 +23,14 @@ def api_polish():
         resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "Polish and tighten prompts. Keep meaning, increase clarity, reduce fluff."},
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a prompt polishing assistant. "
+                        "Make text sharper and clearer, remove fluff, but never change the meaning. "
+                        "Do not use Oxford commas (avoid putting a comma before 'and' or 'or' in a list)."
+                    )
+                },
                 {"role": "user", "content": text}
             ],
             temperature=0.5,
