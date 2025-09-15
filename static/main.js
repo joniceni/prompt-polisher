@@ -1,49 +1,40 @@
-// static/main.js
-
+// Wait for DOM
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("polish-form");
-  const input = document.getElementById("prompt-input");
-  const output = document.getElementById("prompt-output");
-  const copyBtn = document.getElementById("copy-btn");
+  const form     = document.getElementById("form");
+  const statusEl = document.getElementById("status");
+  const outEl    = document.getElementById("out-text");
+  const copyBtn  = document.getElementById("copy");
+  const toast    = document.getElementById("toast");
 
-  // Handle form submit
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    output.value = "Polishing...";
-
+    statusEl.textContent = "Working…";
+    outEl.textContent = "…";
     try {
-      const response = await fetch("/polish", {
+      const data = new FormData(form);             // matches app.py
+      const res  = await fetch("/api/polish", {    // correct endpoint
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.value })
+        body: data
       });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data.error) {
-        output.value = "Error: " + data.error;
+      const json = await res.json();
+      if (json.ok) {
+        outEl.textContent = json.response || "No content";
+        statusEl.textContent = "Done";
       } else {
-        output.value = data.polished;
+        outEl.textContent = json.error || "Error";
+        statusEl.textContent = "Error";
       }
     } catch (err) {
-      output.value = "Error: " + err.message;
+      outEl.textContent = String(err);
+      statusEl.textContent = "Network error";
     }
   });
 
-  // Handle copy button
-  copyBtn.addEventListener("click", () => {
-    if (output.value.trim() === "") {
-      alert("Nothing to copy!");
-      return;
-    }
-    navigator.clipboard.writeText(output.value)
-      .then(() => {
-        copyBtn.innerText = "Copied!";
-        setTimeout(() => copyBtn.innerText = "Copy", 2000);
-      })
-      .catch(() => alert("Failed to copy"));
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(outEl.textContent);
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 900);
+    } catch {}
   });
 });
