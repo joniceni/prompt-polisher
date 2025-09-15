@@ -1,40 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Charles’ Prompt Polisher</title>
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charles’ Prompt Polisher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
 <body>
-  <header class="page-header">
-    <div class="hero">
-      <!-- Make sure this file exists in /static with exactly this name -->
-      <img class="charles" src="{{ url_for('static', filename='framed-charles.png') }}" alt="Charles">
-    </div>
-    <h1>Charles’ Prompt Polisher</h1>
-    <p class="lead">
-      Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.
-    </p>
-  </header>
+    <header class="banner">
+        <div class="banner-content">
+            <img src="{{ url_for('static', filename='charles.png') }}" alt="Charles" class="charles-img">
+            <h1>Charles’ Prompt Polisher</h1>
+        </div>
+    </header>
 
-  <main class="container">
-    <div class="card">
-      <textarea id="userInput" placeholder="Type here..." rows="8"></textarea>
-      <button id="polishBtn" class="btn-primary">Polish My Prompt</button>
+    <main>
+        <p class="subtitle">Paste your rough idea and click <strong>Polish My Prompt</strong>. I’ll turn it into a sharp prompt you can drop into ChatGPT.</p>
 
-      <h3>Polished Prompt</h3>
-      <div class="output">
-        <input id="result" readonly />
-        <button id="copyBtn" class="btn-ghost">Copy</button>
-      </div>
+        <div class="card">
+            <textarea id="promptInput" placeholder="Type here..."></textarea>
+            <button id="polishBtn">Polish My Prompt</button>
+            <h2>Polished Prompt</h2>
+            <div class="output-box">
+                <input type="text" id="resultOutput" readonly>
+                <button id="copyBtn">Copy</button>
+            </div>
+            <p id="errorMsg" class="error"></p>
+        </div>
+    </main>
 
-      <p id="error" class="error" hidden></p>
-    </div>
-  </main>
-
-  <footer>Powered by The Beacon</footer>
+    <footer>
+        <p>Powered by The Beacon</p>
+    </footer>
 </body>
 </html>
