@@ -6,69 +6,124 @@
 <title>Prompt Polisher</title>
 <style>
   :root{
-    --red:#C91818;         /* brand red */
-    --red-deep:#A31313;
-    --ink:#0F0F0F;         /* body text */
-    --muted:#6F7380;       /* secondary text */
-    --bg:#F6F6F8;          /* page background */
-    --card:#FFFFFF;        /* cards */
+    --red:#C91818; --red-deep:#A31313;
+    --ink:#0F0F0F; --muted:#6F7380; --bg:#F6F6F8; --card:#FFFFFF;
     --ring:rgba(0,0,0,.08);
     --shadow-lg:0 28px 60px rgba(0,0,0,.12), 0 6px 18px rgba(0,0,0,.10);
     --shadow-md:0 16px 34px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.08);
-    --radius-xl:22px;
-    --radius-lg:18px;
-    --radius-md:14px;
+    --r-xl:22px; --r-lg:18px; --r-md:14px;
   }
-
   *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  }
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
 
-  /* ===== Header band ===== */
+  /* Header band */
   .band{background:var(--red); box-shadow:var(--shadow-md)}
-  .band-inner{
-    max-width:980px; margin:0 auto; padding:34px 18px 42px;
-    display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;
-  }
-  .charles-wrap{
-    width:108px; height:108px; border-radius:16px;
-    background:#A31313; border:4px solid #fff; box-shadow:var(--shadow-md);
-    display:grid; place-items:center;
-  }
-  .charles-wrap img{width:96px; height:96px; object-fit:cover; border-radius:12px}
-  .title{color:#fff; font-weight:900; letter-spacing:.3px; font-size:38px; margin:6px 0 2px}
-  .tag{color:#FFECEC; font-size:15px; max-width:760px}
-
-  /* ===== Main card ===== */
-  .wrap{max-width:980px; margin:-28px auto 48px; padding:0 18px}
-  .card{
-    background:var(--card); border:1px solid var(--ring); border-radius:var(--radius-xl);
-    box-shadow:var(--shadow-lg); padding:26px;
-  }
-  .card h2{margin:0 0 4px 0; font-size:19px}
-  .card p{margin:0 0 18px 0; color:var(--muted)}
-  textarea{
-    width:100%; min-height:260px; resize:vertical;
-    padding:16px 18px; border-radius:var(--radius-lg);
-    border:1px solid var(--ring); outline:none; font:16px/1.55 inherit;
-    background:#FAFAFB; box-shadow:inset 0 1px 2px rgba(0,0,0,.03);
-  }
-  textarea:focus{border-color:#cfcfd6; box-shadow:0 0 0 6px rgba(201,24,24,.12)}
-
-  .actions{display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap}
-  .btn{
-    background:var(--red); color:#fff; border:2px solid #fff;
-    padding:14px 26px; border-radius:16px; font-weight:900; letter-spacing:.2px;
-    cursor:pointer; box-shadow:var(--shadow-lg);
-  }
+  .band-inner{max-width:980px;margin:0 auto;padding:34px 18px 42px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .charles{width:108px;height:108px;border-radius:16px;background:#A31313;border:4px solid #fff;box-shadow:var(--shadow-md);display:grid;place-items:center}
+  .charles img{width:96px;height:96px;border-radius:12px;object-fit:cover}
+  h1.title{color:#fff;font-weight:900;letter-spacing:.3px;font-size:38px;margin:6px 0 2px}
+  .tag{color:#FFECEC;font-size:15px;max-width:760px}
+  /* Main */
+  .wrap{max-width:980px;margin:-28px auto 48px;padding:0 18px}
+  .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);padding:26px}
+  .card h2{margin:0 0 4px;font-size:19px}
+  .card p{margin:0 0 18px;color:var(--muted)}
+  textarea{width:100%;min-height:260px;resize:vertical;padding:16px 18px;border-radius:var(--r-lg);border:1px solid var(--ring);outline:none;background:#FAFAFB;box-shadow:inset 0 1px 2px rgba(0,0,0,.03)}
+  textarea:focus{border-color:#cfcfd6;box-shadow:0 0 0 6px rgba(201,24,24,.12)}
+  .actions{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap}
+  .btn{background:var(--red);color:#fff;border:2px solid #fff;padding:14px 26px;border-radius:16px;font-weight:900;letter-spacing:.2px;cursor:pointer;box-shadow:var(--shadow-lg)}
   .btn:hover{background:var(--red-deep)}
-
   .status{color:var(--muted)}
+  /* Output */
+  .out{margin-top:18px;border-radius:var(--r-lg);border:1px solid var(--ring);background:#fff}
+  .out-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--ring)}
+  .out-title{font-weight:700}
+  .copy{background:#fff;border:1px solid var(--ring);border-radius:12px;padding:8px 12px;cursor:pointer;box-shadow:var(--shadow-md)}
+  .copy:hover{background:#f8f8f8}
+  .out-body{padding:14px}
+  .out-body pre{margin:0;white-space:pre-wrap}
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:opacity .25s}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
 
-  /* ===== Output ===== */
-  .out{
-    margin-top:18px; border-radius:var(--radius-lg); border:1px solid var(--
+  <div class="band">
+    <div class="band-inner">
+      <div class="charles"><img src="/static/framed-charles.png" alt="Charles" onerror="this.style.display='none'"></div>
+      <h1 class="title">Prompt Polisher</h1>
+      <div class="tag">Paste a rough prompt. We tighten wording, remove fluff and keep your intent clear.</div>
+    </div>
+  </div>
 
+  <main class="wrap">
+    <section class="card">
+      <h2>Your prompt</h2>
+      <p>No Oxford commas. British English.</p>
+
+      <form id="form">
+        <textarea name="prompt" placeholder="Paste your prompt here..."></textarea>
+        <div class="actions">
+          <button class="btn" type="submit">Start Polishing</button>
+          <span id="status" class="status">Ready</span>
+        </div>
+      </form>
+
+      <div id="out" class="out" style="display:none">
+        <div class="out-head">
+          <div class="out-title">Polished prompt</div>
+          <button id="copy" class="copy" type="button">Copy</button>
+        </div>
+        <div class="out-body">
+          <pre id="out-text"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast">Copied</div>
+
+<script>
+const form   = document.getElementById('form');
+const out    = document.getElementById('out');
+const outTxt = document.getElementById('out-text');
+const statusEl = document.getElementById('status');
+const copyBtn  = document.getElementById('copy');
+const toast    = document.getElementById('toast');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  statusEl.textContent = 'Working…';
+  out.style.display = 'none';
+  const data = new FormData(form);
+
+  try {
+    const res = await fetch('/api/polish', { method: 'POST', body: data });
+    const json = await res.json();
+    if (json.ok) {
+      outTxt.textContent = json.response || 'No content';
+      out.style.display = 'block';
+      statusEl.textContent = 'Done';
+    } else {
+      outTxt.textContent = json.error || 'Error';
+      out.style.display = 'block';
+      statusEl.textContent = 'Error';
+    }
+  } catch (err) {
+    outTxt.textContent = String(err);
+    out.style.display = 'block';
+    statusEl.textContent = 'Network error';
+  }
+});
+
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(outTxt.textContent);
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 900);
+  } catch {}
+});
+</script>
+</body>
+</html>
